@@ -206,6 +206,7 @@ func setupRouter(
 			r.Post("/register", authHandler.Register)
 			r.Post("/login", authHandler.Login)
 			r.Post("/refresh", authHandler.Refresh)
+			r.Post("/logout", authHandler.Logout)
 		})
 
 		// Todo routes (protected)

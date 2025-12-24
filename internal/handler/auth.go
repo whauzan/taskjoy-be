@@ -111,3 +111,15 @@ func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 	// Return new token and user info with envelope
 	JSON(w, http.StatusOK, loginResp)
 }
+
+// Logout handles user logout
+func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
+	// With stateless JWT, logout is handled client-side by discarding the token.
+	// This endpoint confirms the logout action and can be extended to support
+	// token blacklisting if needed in the future.
+	h.logger.InfoContext(r.Context(), "user logged out")
+
+	JSON(w, http.StatusOK, map[string]string{
+		"message": "Successfully logged out",
+	})
+}

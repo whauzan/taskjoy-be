@@ -174,6 +174,7 @@ GET /health
 POST /api/v1/auth/register  - Register new user
 POST /api/v1/auth/login     - Login and get JWT token
 POST /api/v1/auth/refresh   - Refresh JWT token
+POST /api/v1/auth/logout    - Logout user
 ```
 
 ### Todos (Authenticated)
@@ -246,6 +247,22 @@ Response:
       "email": "user@example.com",
       "name": "John Doe"
     }
+  }
+}
+```
+
+### Logout
+
+```bash
+curl -X POST http://localhost:8080/api/v1/auth/logout
+```
+
+Response:
+```json
+{
+  "success": true,
+  "data": {
+    "message": "Successfully logged out"
   }
 }
 ```
