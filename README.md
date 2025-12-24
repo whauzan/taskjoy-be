@@ -335,6 +335,23 @@ fly ssh console         # SSH into the machine
 fly secrets list        # List secrets
 ```
 
+**Auto-Deploy from GitHub:**
+
+This project includes a GitHub Actions workflow for automatic deployment on push to `main`.
+
+1. Get your Fly API token:
+   ```bash
+   fly tokens create deploy -x 999999h
+   ```
+
+2. Add the token to GitHub:
+   - Go to your repo → **Settings** → **Secrets and variables** → **Actions**
+   - Click **New repository secret**
+   - Name: `FLY_API_TOKEN`
+   - Value: paste your token
+
+3. Push to `main` branch - it will auto-deploy!
+
 ## Database Migrations
 
 ### With Docker
