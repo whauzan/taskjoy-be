@@ -55,7 +55,7 @@ todo-api/
 ├── stop.sh              # Stop script (Docker)
 ├── docker-compose.yml   # Docker configuration
 ├── Dockerfile           # Docker image definition
-├── render.yaml          # Render.com deployment config
+├── fly.toml             # Fly.io deployment config
 └── README.md            # This file
 ```
 
@@ -290,44 +290,49 @@ curl -X DELETE http://localhost:8080/api/v1/todos/{id} \
 
 ## Deployment
 
-### Deploy to Render.com
+### Deploy to Fly.io
 
-This project includes a `render.yaml` for one-click deployment to Render.
+This project includes a `fly.toml` for deployment to Fly.io.
 
-**Option A: Blueprint (Recommended)**
+**Prerequisites:**
+- Install [flyctl](https://fly.io/docs/hands-on/install-flyctl/)
+- Run `fly auth login`
 
-1. Push your code to GitHub/GitLab
-2. Go to [Render Dashboard](https://dashboard.render.com)
-3. Click **New** > **Blueprint**
-4. Connect your repository
-5. Render will automatically detect `render.yaml` and create:
-   - Web Service (Go API)
-   - PostgreSQL Database
-6. Set the `CORS_ALLOWED_ORIGINS` environment variable to your frontend URL
-7. Click **Apply** to deploy
+**Steps:**
 
-**Option B: Manual Setup**
-
-1. Create a PostgreSQL database on Render
-2. Create a Web Service:
-   - **Environment**: Docker
-   - **Build Command**: (uses Dockerfile)
-   - **Health Check Path**: `/health`
-3. Add environment variables:
-   - `DATABASE_URL`: Copy from your Render PostgreSQL (Internal Connection String)
-   - `JWT_SECRET`: Generate a secure 32+ character string
-   - `ENV`: `production`
-   - `CORS_ALLOWED_ORIGINS`: Your frontend URL(s)
-
-**Run Migrations on Render**
-
-After deployment, run migrations using Render's PostgreSQL shell or connect via `psql`:
 ```bash
-# Using Render's PSQL (from dashboard > database > PSQL)
-\i db/migrations/000001_init.up.sql
+# 1. Create the app (first time only)
+fly launch --no-deploy
 
-# Or connect externally (use External Connection String)
-psql "YOUR_EXTERNAL_CONNECTION_STRING" -f db/migrations/000001_init.up.sql
+# 2. Create PostgreSQL database
+fly postgres create --name taskjoy-db
+
+# 3. Attach database to app (sets DATABASE_URL automatically)
+fly postgres attach taskjoy-db
+
+# 4. Set secrets
+fly secrets set JWT_SECRET="your-secure-secret-min-32-characters"
+fly secrets set CORS_ALLOWED_ORIGINS="https://your-frontend.com"
+
+# 5. Deploy
+fly deploy
+```
+
+**Run Migrations on Fly.io:**
+```bash
+# Connect to your Fly Postgres
+fly postgres connect -a taskjoy-db
+
+# Then run in psql:
+\i db/migrations/000001_init.up.sql
+```
+
+**Useful Commands:**
+```bash
+fly status              # Check app status
+fly logs                # View logs
+fly ssh console         # SSH into the machine
+fly secrets list        # List secrets
 ```
 
 ## Database Migrations
